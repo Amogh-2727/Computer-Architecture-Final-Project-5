@@ -44,7 +44,7 @@ BLTU
 BGEU
 
 U-type | opcode = 55 | Auipc opcode =23
-LUI              AUIPC
+LUI               AUIPC
 
 J- Type | opcode = 111
 JAL
