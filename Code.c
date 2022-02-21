@@ -29,20 +29,14 @@ funct7=(instruct>>5)&& 0x3F;
 switch(funct3){
     case 0: {
         if(funct7=0) {
-        Reg[7]=rd;
-        Reg[8]=rs1;
-        Reg[9]=rs2;
 
-        Reg[7]=Reg[8]+Reg[9];
-        printf("ADD R7,R8,R9");
+        Reg[rd -1]=Reg[rs1 -1]+Reg[rs2 -1];
+        printf("ADD");
     }
     else{
-        Reg[7]=rd;
-        Reg[8]=rs1;
-        Reg[9]=rs2;
 
-        Reg[7]=Reg[8]-Reg[9];
-        printf("SUB R7,R8,R9");}
+        Reg[rd -1]=Reg[rs1 -1]-Reg[rs2-1];
+        printf("SUB");}
     }
     break;
 
@@ -63,12 +57,8 @@ switch(funct3){
 
     case 4: {
 
-        Reg[7]=rd;
-        Reg[8]=rs1;
-        Reg[9]=rs2;
-
-        Reg[7]=((Reg[8]& !Reg[9])|(!Reg[8]& Reg[9]);
-        printf("XOR R7,R8,R9");
+        Reg[rd-1]=((Reg[rs1-1]& !Reg[rs2-1])|(!Reg[rs1-1]& Reg[rs2-1]);
+        printf("XOR");
     }
     break;
 
@@ -84,22 +74,15 @@ switch(funct3){
     
     case 6:{
 
-        Reg[7]=rd;
-        Reg[8]=rs1;
-        Reg[9]=rs2;
-
-        Reg[7]=(Reg[8] | Reg[9]);
-        printf("OR R7,R8,R9");
+        Reg[rd-1]=(Reg[rs1-1] | Reg[rs2-1]);
+        printf("OR");
     }
     break;
 
     case 7: {
-        Reg[7]=rd;
-        Reg[8]=rs1;
-        Reg[9]=rs2;
-
-        Reg[7]=(Reg[8] & Reg[9]);
-        printf("AND R7,R8,R9");
+        
+        Reg[rd-1]=(Reg[rs1-1] & Reg[rs2-1]);
+        printf("AND ");
     }
     break;
 }
