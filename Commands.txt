@@ -5,7 +5,7 @@ x1 - x31 -> General purpose registers
 x1 - > ra(return address)
 x2 -> stack pointer
 
-R -Type  | opcode = 27
+R -Type  | opcode = 51
 Functions:
 ADD
 SUB

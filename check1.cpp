@@ -4,33 +4,160 @@
 #include<stdint.h>
 #include <bits/stdc++.h>
 #include "defs.h"
+//#include "instruction_Fetch.c"
+//#include "R_Type.c"
 
 uint8_t *memory_r = NULL;
 
 using namespace std;
 
-int load_code_to_mem(const char *t, uint32_t start_loc)
+int function_R(int PC){
+
+long int instr=0;
+int rd =0;
+int funct3;
+int rs1=0;
+int rs2=0;
+int funct7;
+long int temp1,temp2,temp3, temp4;
+
+temp1 = memory_r[PC]& 0xFF;
+temp2=memory_r[PC + 1]& 0xFF;
+temp3=memory_r[PC + 2]& 0xFF;
+temp4=memory_r[PC + 3]& 0xFF;
+
+instr = ((temp4 << 24) | (temp3 << 16) | (temp2 << 8) | (temp1));
+printf ("instr: %lx" , instr);
+
+rd=(instr>>7)& 0x1F;
+funct3=(instr>>12)& 0x07;
+rs1=(instr>>15)& 0x1F;
+rs2=(instr>>20)& 0x1F;
+funct7=(instr>>25)& 0x3F;
+printf(" rs1: %d , rs2: %d", rs1, rs2);
+switch(funct3){
+    case 0: {
+        if(funct7==0) {
+
+        Reg[rd]=Reg[rs1] + Reg[rs2];
+        printf("ADD");
+    }
+    else{
+
+        Reg[rd]=Reg[rs1]-Reg[rs2];
+        printf("SUB");}
+    }
+    break;
+
+    case 1:{
+         printf("SLL");
+    }
+    break;
+
+    case 2: {
+        printf("SLT");
+    }
+    break;
+
+    case 3: {
+        printf("SLTU");
+    }
+    break;
+
+    case 4: {
+
+        Reg[rd]=((Reg[rs1]& !Reg[rs2])|(!Reg[rs1]& Reg[rs2]));
+        printf("XOR");
+    }
+    break;
+
+    case 5: {
+        if(funct7=0) {
+        printf("SRL");
+    }
+    else{
+        printf("SRA");
+    }
+    }
+    break;
+    
+    case 6:{
+
+        Reg[rd]=(Reg[rs1] | Reg[rs2]);
+        printf("OR");
+    }
+    break;
+
+    case 7: {
+        
+        Reg[rd-1]=(Reg[rs1] & Reg[rs2]);
+        printf("AND ");
+    }
+    break;
+}
+
+}
+
+void instruction_Fetch(uint32_t no_instr)
+{
+int opcode;
+uint32_t NPC;
+uint32_t incr = 0;
+int start_loc =0;
+while(no_instr!=0)
+{
+
+opcode=memory_r[PC + incr] & 0x7F;
+
+switch(opcode){
+case 51:
+function_R(PC);
+break;
+case (19|3|103):
+//NPC=function_I(PC);
+break;
+case 35:
+//function_S(PC);
+break;
+case 99:
+//NPC=function_B(PC);
+break;
+case(55|23):
+//NPC=function_U(PC);
+break;
+case 111:
+//NPC=function_J(PC);
+break;
+}
+no_instr -= 1;
+incr += 4;
+}
+}
+
+
+int load_code_to_mem(const char *t)
 {    
     long int instruct;
     ifstream file(t);
-    string data = "";
+    string instr_add = "";
     std::string instr = "";
-    uint32_t incr = 0;
     long int instr_cnt = 0;
-    while(getline(file, data,':'))
+    long int instr_add_t = 0;
+    while(getline(file, instr_add,':'))
     {
         getline(file, instr);
 
         instruct = std::stol(instr, nullptr, 16);
+        instr_add_t = std::stol(instr_add, nullptr, 16);
 
         //cout << std::hex << instruct << std::dec << endl;
 
-        memory_r[start_loc + incr] = instruct & 0xFF;
-        memory_r[start_loc + incr + 1] = (instruct >> 8) & 0xFF;
-        memory_r[start_loc + incr + 2] = (instruct >> 16) & 0xFF;
-        memory_r[start_loc + incr + 3] = (instruct >> 24) & 0xFF;
+        memory_r[instr_add_t] = instruct & 0xFF;
+        memory_r[instr_add_t + 1] = (instruct >> 8) & 0xFF;
+        memory_r[instr_add_t + 2] = (instruct >> 16) & 0xFF;
+        memory_r[instr_add_t + 3] = (instruct >> 24) & 0xFF;
         
-        incr += 4;
+
         ++instr_cnt;
     }
         file.close();
@@ -107,10 +234,13 @@ int main(int argc, char *argv[]) {
     Reg[2] = (uint32_t)atoi(argv[2]);
     
     memory_r = (uint8_t*)calloc(MEMSIZE, sizeof(uint8_t));
-    //uint8_t *memory_r = new uint8_t[MEMSIZE];
     
-    no_instr = load_code_to_mem(filename, PC);
-    //print_mem(0, no_instr);
+    no_instr = load_code_to_mem(filename);
+    Reg[14] = 2;
+    Reg[15] = 7;
+    
+    instruction_Fetch(no_instr);
+    print_mem(0, no_instr);
     print_regs();
     
     return 0;
