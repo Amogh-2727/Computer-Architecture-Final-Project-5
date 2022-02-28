@@ -1,4 +1,5 @@
-#include<stdint.h>
+#include <stdint.h>
+#include <stdlib.h>
 #include "defs.h"
 #include <stdio.h>
 
@@ -87,6 +88,144 @@ switch(funct3){
 }
 
 return 0;
+}
+
+void LUI_type(uint32_t instruction)
+{
+    unsigned int rd = 0, imm = 0;
+
+    rd = (instruction >> 7) & 0x1F;
+    imm = (instruction >> 12) & 0xFFFFF;
+
+    Reg[rd] = (imm << 12);
+    PC = PC + 4;
+
+    return;
+}
+
+void AUIPC_type(uint32_t instruction)
+{
+    unsigned int rd = 0, imm = 0;
+
+    rd = (instruction >> 7) & 0x1F;
+    imm = (instruction >> 12) & 0xFFFFF;
+
+    Reg[rd] = PC + (imm << 12);
+    PC = PC + 4;
+
+    return;
+}
+
+
+void JAL_type(uint32_t instruction)
+{
+    unsigned int rd = 0, imm = 0, imm_19_12, imm_11, imm_10_1, imm_20;
+    uint32_t zeromask = 0x00000000;
+
+    rd = (instruction >> 7) & 0x1F;
+    imm_19_12 = (instruction >> 12) & 0xFF;
+    imm_11 = (instruction >> 20) & 0x01;
+    imm_10_1 = (instruction >> 21) & 0x3FF;
+    imm_20 = (instruction >> 31) & 0x01;
+    imm = zeromask | (imm_10_1 << 1) | (imm_11 << 11) | (imm_19_12 << 12) | (imm_20 << 20);
+
+    Reg[rd] = PC + 4;
+    PC = PC + sign_ext(imm,21);
+
+    return;
+}
+
+void JALR_type(uint32_t instruction)
+{
+    unsigned int rd = 0, funct3 = 0, rs1 = 0, imm = 0,;
+
+    rd = (instruction >> 7) & 0x1F;
+    funct3 = (instruction >> 12) & 0x07;
+    rs1 = (instruction >> 15) & 0x1F;
+    imm = (instruction >> 20) & 0xFFF;
+
+    if (Reg[rs1] == 0 && rd == 0 && imm == 0 && funct3 == 0)
+    {
+        Reg[rd] = 0;
+        PC = 0;
+        exit(0);
+    }
+
+    else
+    {
+        Reg[rd] = PC + 4;
+        PC = (uint32_t)((int32_t)Reg[rs1] + sign_ext(imm,12));
+    }
+
+    return;
+}
+
+void B_type(uint32_t instruction)
+{
+    
+    unsigned int rs2 = 0, funct3 = 0, rs1 = 0, imm = 0, imm_12, imm_11, imm_10_5, imm_4_1;
+    uint32_t zeromask = 0x00000000;
+
+    imm_11 = (instruction >> 7) & 0x01;
+    imm_4_1 = (instruction >> 8) & 0x0F;
+    funct3 = (instruction >> 12) & 0x07;
+    rs1 = (instruction >> 15) & 0x1F;
+    rs2 = (instruction >> 20) & 0x1F;
+    imm_10_5 = (instruction >> 25) & 0x3F;
+    imm_12 = (instruction >> 31) & 0x01;
+    imm = zeromask | (imm_4_1 << 1) | (imm_10_5 << 5) | (imm_11 << 11) | (imm_12 << 12);
+
+    
+    switch(funct3)
+    {
+        case 0: 
+            if (Reg[rs1] == Reg[rs2])
+                PC = PC + sign_ext(imm,13);
+            else
+                PC = PC + 4;
+            break;
+
+        case 1: 
+            if (Reg[rs1] != Reg[rs2])
+                PC = PC + sign_ext(imm,13);
+            else
+                PC = PC + 4;
+            break;
+
+        case 4: 
+            if (Reg[rs1] < (int32_t)Reg[rs2])
+                PC = PC + sign_ext(imm,13);
+            else
+                PC = PC + 4;
+            break;
+
+        case 5: 
+            if (Reg[rs1] >= (int32_t)Reg[rs2])
+                PC = PC + sign_ext(imm,13);
+            else
+                PC = PC + 4;
+            break;
+
+        case 6: 
+            if (Reg[rs1] < (uint32_t)Reg[rs2])
+                PC = PC + sign_ext(imm,13);
+            else
+                PC = PC + 4;
+            break;
+
+        case 7: 
+            if (Reg[rs1] >= (uint32_t)Reg[rs2])
+                PC = PC + sign_ext(imm,13);
+            else
+                PC = PC + 4;
+            break;                     
+
+        default:
+            break;      
+
+    }
+
+    return;
 }
 
 void LD_type(uint32_t instruction, uint8_t *memory_r)
