@@ -5,36 +5,59 @@
 
 void instruction_Fetch(uint32_t no_instr, uint8_t *memory_r)
 {
-int opcode;
-uint32_t NPC;
-uint32_t incr = 0;
-int start_loc =0;
-while(no_instr!=0)
-{
+    int opcode;
+    long int temp1,temp2,temp3, temp4;
+    uint32_t instruction;
 
-opcode=memory_r[PC + incr] & 0x7F;
+    while(no_instr!=0)
+    {
 
-switch(opcode){
-case 51:
-function_R(PC, memory_r);
-break;
-case (19|3|103):
-//NPC=function_I(PC);
-break;
-case 35:
-//function_S(PC);
-break;
-case 99:
-//NPC=function_B(PC);
-break;
-case(55|23):
-//NPC=function_U(PC);
-break;
-case 111:
-//NPC=function_J(PC);
-break;
-}
-no_instr -= 1;
-incr += 4;
-}
+        temp1 = memory_r[PC] & 0xFF;
+        temp2 = memory_r[PC + 1] & 0xFF;
+        temp3 = memory_r[PC + 2] & 0xFF;
+        temp4 = memory_r[PC + 3] & 0xFF;
+
+        instruction = ((temp4 << 24) | (temp3 << 16) | (temp2 << 8) | (temp1));
+
+        opcode=memory_r[PC] & 0x7F;
+
+        switch(opcode){
+            case 51:
+                R_type(instruction);
+                break;
+
+            case 19:
+                //function_I(PC);
+                break;
+
+            case 3:
+                LD_type(instruction, memory_r);
+                break;
+            
+            case 35:
+                STR_type(instruction, memory_r);
+                break;
+
+            case 99:
+                B_type(instruction);
+                break;
+
+            case 55:
+                LUI_type(instruction);
+                break;
+
+            case 23:
+                AUIPC_type(instruction);
+                break;
+
+            case 111:
+                JAL_type(instruction);
+                break;
+
+            case 103:
+                JALR_type(instruction);
+                break;
+        }
+        no_instr -= 1;
+    }
 }

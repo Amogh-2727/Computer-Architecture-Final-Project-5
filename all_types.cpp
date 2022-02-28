@@ -3,71 +3,62 @@
 #include "defs.h"
 #include <stdio.h>
 
-int function_R(int PC, uint8_t *memory_r){
+int R_type(uint32_t instruction){
 
-long int instr=0;
-int rd =0;
-int funct3;
-int rs1=0;
-int rs2=0;
-int funct7;
-long int temp1,temp2,temp3, temp4;
+int rd = 0;
+int funct3 = 0;
+int rs1 = 0;
+int rs2 = 0;
+int funct7 = 0;
 
-temp1 = memory_r[PC]& 0xFF;
-temp2 = memory_r[PC + 1]& 0xFF;
-temp3 = memory_r[PC + 2]& 0xFF;
-temp4 = memory_r[PC + 3]& 0xFF;
-
-instr = ((temp4 << 24) | (temp3 << 16) | (temp2 << 8) | (temp1));
-
-rd=(instr>>7)& 0x1F;
-funct3=(instr>>12)& 0x07;
-rs1=(instr>>15)& 0x1F;
-rs2=(instr>>20)& 0x1F;
-funct7=(instr>>25)& 0x3F;
+rd = (instruction >> 7) & 0x1F;
+funct3 = (instruction >> 12) & 0x07;
+rs1 = (instruction >> 15) & 0x1F;
+rs2 = (instruction >> 20) & 0x1F;
+funct7 = (instruction >> 25) & 0x3F;
 
 switch(funct3){
     case 0: {
         if(funct7==0) {
 
         Reg[rd]=Reg[rs1] + Reg[rs2];
-        printf("ADD");
+        printf("ADD\n");
     }
     else{
 
         Reg[rd]=Reg[rs1]-Reg[rs2];
-        printf("SUB");}
+        printf("SUB\n");}
     }
     break;
 
     case 1:{
-         printf("SLL");
+         printf("SLL\n");
     }
     break;
 
     case 2: {
-        printf("SLT");
+        printf("SLT\n");
     }
     break;
 
     case 3: {
-        printf("SLTU");
+        printf("SLTU\n");
     }
     break;
 
     case 4: {
 
         Reg[rd]=((Reg[rs1]& !Reg[rs2])|(!Reg[rs1]& Reg[rs2]));
-        printf("XOR");
+        printf("XOR\n");
     }
     break;
 
     case 5: {
         if(funct7=0) {
-        printf("SRL");
+        printf("SRL\n");
     }
     else{
-        printf("SRA");
+        printf("SRA\n");
     }
     }
     break;
@@ -75,17 +66,18 @@ switch(funct3){
     case 6:{
 
         Reg[rd]=(Reg[rs1] | Reg[rs2]);
-        printf("OR");
+        printf("OR\n");
     }
     break;
 
     case 7: {
         
         Reg[rd-1]=(Reg[rs1] & Reg[rs2]);
-        printf("AND ");
+        printf("AND\n");
     }
     break;
 }
+PC = PC + 4;
 
 return 0;
 }
@@ -137,7 +129,7 @@ void JAL_type(uint32_t instruction)
 
 void JALR_type(uint32_t instruction)
 {
-    unsigned int rd = 0, funct3 = 0, rs1 = 0, imm = 0,;
+    unsigned int rd = 0, funct3 = 0, rs1 = 0, imm = 0;
 
     rd = (instruction >> 7) & 0x1F;
     funct3 = (instruction >> 12) & 0x07;
@@ -148,6 +140,7 @@ void JALR_type(uint32_t instruction)
     {
         Reg[rd] = 0;
         PC = 0;
+        print_regs();
         exit(0);
     }
 
@@ -228,6 +221,68 @@ void B_type(uint32_t instruction)
     return;
 }
 
+uint32_t load_mem(uint32_t address, uint32_t type, uint8_t *memory_r)
+{
+    uint32_t data = 0;
+    uint32_t temp1 = 0, temp2 = 0, temp3 =0;
+
+
+    switch(type)
+    {
+        case 0: //LB
+            data = (uint32_t)memory_r[address];
+            break;
+
+        case 1: //LH
+            temp1 = (uint32_t)memory_r[address + 1];
+            data = (uint32_t)memory_r[address];
+            data = (uint32_t)(data | (temp1 << 8)); 
+            break;
+            
+        case 2: //LW
+            temp3 = (uint32_t)memory_r[address + 3];
+            temp2 = (uint32_t)memory_r[address + 2];
+            temp1 = (uint32_t)memory_r[address + 1];
+            data = (uint32_t)memory_r[address];
+            data = (uint32_t)(data | (temp1 << 8) | (temp2 << 16) | (temp3 << 24)); 
+            break;    
+
+        default:
+            break; 
+    }
+
+    return data;
+}
+
+void store_mem(uint32_t address, uint32_t type, uint8_t *memory_r, uint32_t data)
+{
+
+    switch(type)
+    {
+        case 0: //SB
+            memory_r[address] = (uint8_t)(data & 0x000000ff);
+            break;
+
+        case 1: //SH
+            memory_r[address] = (uint8_t)(data & 0x000000ff);
+            memory_r[address + 1] = (uint8_t)((data & 0x0000ff00) >> 8);
+            break;
+            
+        case 2: //SW
+            memory_r[address] = (uint8_t)(data & 0x000000ff);
+            memory_r[address + 1] = (uint8_t)((data & 0x0000ff00) >> 8);
+            memory_r[address + 2] = (uint8_t)((data & 0x00ff0000) >> 16);
+            memory_r[address + 3] = (uint8_t)((data & 0xff000000) >> 24);
+            break;    
+
+        default:
+            break; 
+    }
+
+    return;
+}
+
+
 void LD_type(uint32_t instruction, uint8_t *memory_r)
 {
     unsigned int rd = 0, funct3 = 0, rs1 = 0, imm = 0;
@@ -287,7 +342,6 @@ void STR_type(uint32_t instruction, uint8_t *memory_r)
     rs1 = (instruction >> 15) & 0x1F;
     rs2 = (instruction >> 20) & 0x1F;
     imm_u = (instruction >> 25) & 0x3F;
-
     imm = imm | (imm_u << 5) | (imm_l);
     offset = sign_ext(imm, 12);
 
@@ -317,67 +371,6 @@ void STR_type(uint32_t instruction, uint8_t *memory_r)
     }
 
     PC += 4;
-
-    return;
-}
-
-uint32_t load_mem(uint32_t address, uint32_t type, uint8_t *memory_r)
-{
-    uint32_t data = 0;
-    uint32_t temp1 = 0, temp2 = 0, temp3 =0;
-
-
-    switch(type)
-    {
-        case 0: //LB
-            data = (uint32_t)memory_r[address];
-            break;
-
-        case 1: //LH
-            temp1 = (uint32_t)memory_r[address + 1];
-            data = (uint32_t)memory_r[address];
-            data = (uint32_t)(data | (temp1 << 8)); 
-            break;
-            
-        case 2: //LW
-            temp3 = (uint32_t)memory_r[address + 3];
-            temp2 = (uint32_t)memory_r[address + 2];
-            temp1 = (uint32_t)memory_r[address + 1];
-            data = (uint32_t)memory_r[address];
-            data = (uint32_t)(data | (temp1 << 8) | (temp2 << 16) | (temp3 << 24)); 
-            break;    
-
-        default:
-            break; 
-    }
-
-    return data;
-}
-
-void store_mem(uint32_t address, uint32_t type, uint8_t *memory_r, uint32_t data)
-{
-
-    switch(type)
-    {
-        case 0: //SB
-            memory_r[address] = (uint8_t)(data & 0x000000ff);
-            break;
-
-        case 1: //SH
-            memory_r[address] = (uint8_t)(data & 0x000000ff);
-            memory_r[address + 1] = (uint8_t)((data & 0x0000ff00) >> 8);
-            break;
-            
-        case 2: //SW
-            memory_r[address] = (uint8_t)(data & 0x000000ff);
-            memory_r[address + 1] = (uint8_t)((data & 0x0000ff00) >> 8);
-            memory_r[address + 2] = (uint8_t)((data & 0x00ff0000) >> 16);
-            memory_r[address + 3] = (uint8_t)((data & 0xff000000) >> 24);
-            break;    
-
-        default:
-            break; 
-    }
 
     return;
 }
