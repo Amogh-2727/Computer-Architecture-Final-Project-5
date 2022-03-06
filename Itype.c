@@ -22,7 +22,7 @@ int funct3;
 int rs1=0;
 int imm=0;
 int shamt=0;
-
+int funct_I =0;
 
 long int temp1,temp2,temp3, temp4;
 
