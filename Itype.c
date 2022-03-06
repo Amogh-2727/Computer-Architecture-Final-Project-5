@@ -21,6 +21,8 @@ int rd =0;
 int funct3;
 int rs1=0;
 int imm=0;
+int shamt=0;
+
 
 long int temp1,temp2,temp3, temp4;
 
@@ -41,6 +43,18 @@ switch(funct3){
 
         Reg[rd]=(int32_t)Reg[rs1] + sign_ext(imm, 12);
         printf("ADDI");
+    }
+
+    break;
+
+    case 1: {
+
+        shamt = (instr>>20)& 0x1F
+        funct_I=(instr>>25)& 0x3F;
+        if(funct_I = 0){
+        Reg[rd]=(int32_t)Reg[rs1] << sign_ext(shamt, 5);
+        printf("SLLI");
+        }
     }
 
     break;
@@ -80,6 +94,25 @@ switch(funct3){
     break;
 
 
+    case 5: {
+
+        shamt = (instr>>20)& 0x1F
+        funct_I=(instr>>25)& 0x3F;
+
+        if (funct_I = 0X00){
+        Reg[rd]=(int32_t )Reg[rs1] >> (int32_t )(shamt);
+        printf("SRLI");
+        }
+
+        else if (funct_I = 0X02){
+        Reg[rd]=(int32_t )Reg[rs1] >> sign_ext(shamt, 5);
+        printf("SRAI");
+        }
+    }
+
+    break;
+
+
 
     case 6:{
 
@@ -97,5 +130,8 @@ switch(funct3){
 }
 
 return 0;
+
 }
+
+
 
