@@ -19,67 +19,127 @@ funct7 = (instruction >> 25) & 0x3F;
 
 switch(funct3){
     case 0: {
-        if(funct7==0) {
-
-        Reg[rd]=Reg[rs1] + Reg[rs2];
-        printf("ADD\n");
+        if(funct7=0) {
+        Reg[rd] = (uint32_t)((int32_t)Reg[rs1] + (int32_t)Reg[rs2]);
     }
     else{
-
-        Reg[rd]=Reg[rs1]-Reg[rs2];
-        printf("SUB\n");}
+        Reg[rd] = (uint32_t)((int32_t)Reg[rs1] - (int32_t)Reg[rs2]);
+    }
     }
     break;
 
-    case 1:{
-         printf("SLL\n");
+    case 1:{       
+        Reg[rd] = Reg[rs1] << Reg[rs2];
     }
     break;
 
     case 2: {
-        printf("SLT\n");
+
+        if(Reg[rs1] < (int32_t)Reg[rs2]){
+            Reg[rd] = 1;
+        }
+        else{
+            Reg[rd] = 0;
+        }
     }
     break;
 
     case 3: {
-        printf("SLTU\n");
+        if(Reg[rs1] < Reg[rs2]){
+            Reg[rd] = 1;
+        }
+        else{
+            Reg[rd] = 0;
+        }
     }
     break;
 
     case 4: {
-
-        Reg[rd]=((Reg[rs1]& !Reg[rs2])|(!Reg[rs1]& Reg[rs2]));
-        printf("XOR\n");
-    }
+        Reg[rd] = Reg[rs1] ^ Reg[rs2];
+         }
     break;
 
     case 5: {
         if(funct7=0) {
-        printf("SRL\n");
-    }
-    else{
-        printf("SRA\n");
-    }
+            Reg[rd] = Reg[rs1] >> Reg[rs2];
+        }
+        else{
+            Reg[rd] = (int32_t)Reg[rs1] >> Reg[rs2];
+        }
     }
     break;
     
     case 6:{
-
-        Reg[rd]=(Reg[rs1] | Reg[rs2]);
-        printf("OR\n");
+        Reg[rd] = Reg[rs1] | Reg[rs2];
     }
     break;
 
-    case 7: {
-        
-        Reg[rd-1]=(Reg[rs1] & Reg[rs2]);
-        printf("AND\n");
+    case 7: { 
+        Reg[rd] = Reg[rs1] & Reg[rs2];
     }
     break;
 }
 PC = PC + 4;
 
 return 0;
+}
+
+void I_type(int32_t instruction){
+
+    int rd = 0;
+    int funct3 = 0;
+    int rs1 = 0;
+    int imm = 0;
+
+    rd = (instruction >> 7) & 0x1F;
+    funct3 = (instruction >> 12) & 0x07;
+    rs1 = (instruction >> 15) & 0x1F;
+    imm = (instruction >> 20) & 0xFFF;
+
+    //For 
+
+    switch(funct3)
+    {
+        case 0:
+            Reg[rd] = (uint32_t)((int32_t)Reg[rs1] + sign_ext(imm, 12));
+            break;
+
+        case 1:
+            Reg[rd] = Reg[rs1] << sign_ext(imm, 12);
+            break;
+
+        case 2:
+            if ((int32_t)Reg[rs1] < sign_ext(imm, 12))
+                Reg[rd] = 1;
+            else 
+                Reg[rd] = 0;
+            break;
+
+        case 3: 
+            if (Reg[rs1] < (uint32_t)imm)
+                Reg[rd] = 1;
+        else
+                Reg[rd] = 0;
+            break;
+
+        case 4:
+            Reg[rd]=Reg[rs1] ^ sign_ext(imm, 12);
+            break;
+
+        case 5:
+
+
+        case 6:
+            Reg[rd] = Reg[rs1] | sign_ext(imm, 12);
+            break;
+
+        case 7: 
+            Reg[rd] = Reg[rs1] & sign_ext(imm, 12);
+            break;
+    }
+
+    PC = PC + 4;
+    return;
 }
 
 void LUI_type(uint32_t instruction)
@@ -270,6 +330,7 @@ void store_mem(uint32_t address, uint32_t type, uint8_t *memory_r, uint32_t data
             
         case 2: //SW
             memory_r[address] = (uint8_t)(data & 0x000000ff);
+            printf("Address: %x", address);
             memory_r[address + 1] = (uint8_t)((data & 0x0000ff00) >> 8);
             memory_r[address + 2] = (uint8_t)((data & 0x00ff0000) >> 16);
             memory_r[address + 3] = (uint8_t)((data & 0xff000000) >> 24);
@@ -333,7 +394,7 @@ void LD_type(uint32_t instruction, uint8_t *memory_r)
 void STR_type(uint32_t instruction, uint8_t *memory_r)
 {
     unsigned int rs2 = 0, funct3 = 0, rs1 = 0, imm_l = 0, imm_u = 0;
-    int32_t imm = 0x00000000;
+    unsigned int imm = 0x00000000;
     int32_t offset;
     uint32_t zeromask = 0x00000000;
     uint32_t address, data;
@@ -341,7 +402,7 @@ void STR_type(uint32_t instruction, uint8_t *memory_r)
     funct3 = (instruction >> 12) & 0x07;
     rs1 = (instruction >> 15) & 0x1F;
     rs2 = (instruction >> 20) & 0x1F;
-    imm_u = (instruction >> 25) & 0x3F;
+    imm_u = (instruction >> 25) & 0x7F;
     imm = imm | (imm_u << 5) | (imm_l);
     offset = sign_ext(imm, 12);
 
@@ -361,6 +422,7 @@ void STR_type(uint32_t instruction, uint8_t *memory_r)
 
         case 2: 
             address = (int32_t)Reg[rs1] + offset;
+            printf("imm: %d", imm);
             data = Reg[rs2];
             store_mem(address, 2, memory_r, data);
             break;          

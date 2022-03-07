@@ -41,10 +41,10 @@ int load_code_to_mem(const char *t)
 
 void print_mem(int l, int instr_cnt)
 {
-    for(int j = 0; j < instr_cnt * 32; j++)
+    for(int j = 65535; j > 65500 ; j--)
     {   
         //printf("memory[%x] = %x\n", l, memory_r[l]);
-        std::cout << std::hex <<"Memory[" << l << "] = " <<  (int)memory_r[l] << std::dec << endl;
+        std::cout << std::hex <<"Memory[" << j << "] = " <<  (int)memory_r[j] << std::dec << endl;
         l++;
     }
 }
@@ -75,13 +75,10 @@ int main(int argc, char *argv[]) {
     memory_r = (uint8_t*)calloc(MEMSIZE, sizeof(uint8_t));
     
     no_instr = load_code_to_mem(filename);
-    Reg[2] = 65503;
-    Reg[8] = 65535;
-    memory_r[65515] = 100;
+
     instruction_Fetch(no_instr, memory_r);
     
     print_mem(0, no_instr);
-    print_regs();
     
     return 0;
 }

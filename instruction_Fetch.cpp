@@ -9,7 +9,7 @@ void instruction_Fetch(uint32_t no_instr, uint8_t *memory_r)
     long int temp1,temp2,temp3, temp4;
     uint32_t instruction;
 
-    while(no_instr!=0)
+    while(1)
     {
 
         temp1 = memory_r[PC] & 0xFF;
@@ -19,7 +19,7 @@ void instruction_Fetch(uint32_t no_instr, uint8_t *memory_r)
 
         instruction = ((temp4 << 24) | (temp3 << 16) | (temp2 << 8) | (temp1));
 
-        opcode=memory_r[PC] & 0x7F;
+        opcode = memory_r[PC] & 0x7F;
 
         switch(opcode){
             case 51:
@@ -27,7 +27,7 @@ void instruction_Fetch(uint32_t no_instr, uint8_t *memory_r)
                 break;
 
             case 19:
-                //function_I(PC);
+                I_type(instruction);
                 break;
 
             case 3:
@@ -59,5 +59,6 @@ void instruction_Fetch(uint32_t no_instr, uint8_t *memory_r)
                 break;
         }
         no_instr -= 1;
+        print_regs();
     }
 }
