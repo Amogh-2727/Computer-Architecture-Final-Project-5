@@ -11,6 +11,7 @@ using namespace std;
 
 uint32_t Reg[32];
 uint32_t PC;
+uint32_t Debug_mode = 0;
 
 int32_t sign_ext(uint32_t data, uint32_t size)
 {
@@ -21,7 +22,7 @@ int32_t sign_ext(uint32_t data, uint32_t size)
 
 void print_regs()
 {
-    
+
     cout << "---------------------------------------------------------------------------------------------------------" << endl;
     cout << "|                                          Status of Registers                                          |" << endl;
     cout << "---------------------------------------------------------------------------------------------------------" << endl; 
@@ -52,6 +53,12 @@ void print_regs()
     cout << "--------------" << endl; 
     
     
+}
+
+void unknown_instr(uint32_t instruction)
+{
+    cout << "Instruction not recognised. Instruction Address: " << std::hex << instruction << std::dec << endl;
+    exit(0);
 }
 
 #endif

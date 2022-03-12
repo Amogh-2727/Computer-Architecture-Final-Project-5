@@ -71,6 +71,8 @@ int main(int argc, char *argv[]) {
     }    
     
     Reg[2] = (uint32_t)atoi(argv[2]);
+
+    Debug_mode = (uint32_t)atoi(argv[4]);
     
     memory_r = (uint8_t*)calloc(MEMSIZE, sizeof(uint8_t));
     
@@ -78,7 +80,7 @@ int main(int argc, char *argv[]) {
 
     instruction_Fetch(no_instr, memory_r);
     
-    print_mem(0, no_instr);
+    //print_mem(0, no_instr);
     
     return 0;
 }
