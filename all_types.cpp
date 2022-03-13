@@ -13,19 +13,15 @@ void verbose_print(uint32_t instruction, uint32_t Debug_mode)
 {
     if (Debug_mode == 1)
     {
-        cout << showbase << internal;
+        cout << "----------------------------------------------------------------------------------------------------------------" << endl;
+        std::cout << std::hex << "Instruction Address: " << instruction << std::dec << endl << endl;
+        std::cout << std::hex << "PC:  " << PC << std::dec << endl; 
 
-        cout << "----------------------------------------------------------------------------------------------" << endl;
-        std::cout << std::hex << "Instruction Address: " << instruction << "  " << "PC: " << PC << std::dec << endl;
-
-        std::cout << std::hex << "R0: " << Reg[0] << "  " << "R1: " << Reg[1] << "  " << "R2: " << Reg[2] << "  " << "R3: " << Reg[3] << "  " << "R4: " << Reg[4] << "  " << "R5: " << Reg[5] << "  " << "R6: " << Reg[6] << "  " << "R7: " << Reg[7]  << std::dec << endl;
-        
-        std::cout << std::hex << "R8: " << Reg[8] << "  " << "R9: " << Reg[9] << "  " << "R10: " << Reg[10] << "  " << "R11: " << Reg[11] << "  " << "R12: " << Reg[12] << "  " << "R13: " << Reg[13] << "  " << "R14: " << Reg[14] << "  " << "R15: " << Reg[15]  << std::dec << endl;
-
-        std::cout << std::hex << "R16: " << Reg[16] << "  " << "R17: " << Reg[17] << "  " << "R18: " << Reg[18] << "  " << "R19: " << Reg[19] << "  " << "R20: " << Reg[20] << "  " << "R21: " << Reg[21] << "  " << "R22: " << Reg[22] << "  " << "R23: " << Reg[23]  << std::dec << endl;
-
-        std::cout << std::hex << "R24: " << Reg[24] << "  " << "R25: " << Reg[25] << "  " << "R26: " << Reg[26] << "  " << "R27: " << Reg[27] << "  " << "R28: " << Reg[28] << "  " << "R29: " << Reg[29] << "  " << "R30: " << Reg[30] << "  " << "R31: " << Reg[31]  << std::dec << endl;
-        cout << "----------------------------------------------------------------------------------------------" << endl << endl;
+        std::cout << std::hex << "R0:  " << left << setw(10) << Reg[0] << "R1:  " << left << setw(10) << Reg[1] << "R2:  " << left << setw(10) << Reg[2] << "R3:  " << left << setw(10) << Reg[3] << "R4:  " << left << setw(10) << Reg[4] << "R5:  " << left << setw(10) << Reg[5] << "R6:  " << left << setw(10) << Reg[6] << "R7:  " << left << setw(10) << Reg[7]  << std::dec << endl;
+        std::cout << std::hex << "R8:  " << left << setw(10) << Reg[8] << "R9:  " << left << setw(10) << Reg[9] << "R10: " << left << setw(10) << Reg[10] << "R11: " << left << setw(10) << Reg[11] << "R12: " << left << setw(10) << Reg[12] << "R13: " << left << setw(10) << Reg[13] << "R14: " << left << setw(10) << Reg[14] << "R15: " << left << setw(10) << Reg[15]  << std::dec << endl;
+        std::cout << std::hex << "R16: " << left << setw(10) << Reg[16] << "R17: " << left << setw(10) << Reg[17] << "R18: " << left << setw(10) << Reg[18] << "R19: " << left << setw(10) << Reg[19] << "R20: " << left << setw(10) << Reg[20] << "R21: " << left << setw(10) << Reg[21] << "R22: " << left << setw(10) << Reg[22] << "R23: " << left << setw(10) << Reg[23]  << std::dec << endl;
+        std::cout << std::hex << "R24: " << left << setw(10) << Reg[24] << "R25: " << left << setw(10) << Reg[25] << "R26: " << left << setw(10) << Reg[26] << "R27: " << left << setw(10) << Reg[27] << "R28: " << left << setw(10) << Reg[28] << "R29: " << left << setw(10) << Reg[29] << "R30: " << left << setw(10) << Reg[30] << "R31: " << left << setw(10) << Reg[31]  << std::dec << endl;
+        cout << "----------------------------------------------------------------------------------------------------------------" << endl << endl;
     }
 }
 
@@ -108,6 +104,7 @@ int R_type(uint32_t instruction, uint8_t *memory_r)
     unsigned int rs1 = 0;
     unsigned int rs2 = 0;
     unsigned int funct7 = 0;
+    unsigned long long int result = 0;
 
     rd = (instruction >> 7) & 0x1F;
     funct3 = (instruction >> 12) & 0x07;
@@ -122,52 +119,115 @@ int R_type(uint32_t instruction, uint8_t *memory_r)
             if(funct7 == 0) {
                 Reg[rd] = (uint32_t)((int32_t)Reg[rs1] + (int32_t)Reg[rs2]);
             }
+
+            else if (funct7 == 1)
+            {
+                Reg[rd] = (uint32_t)((int32_t)Reg[rs1] * (int32_t)Reg[rs2]);
+            }
+
             else{
                 Reg[rd] = (uint32_t)((int32_t)Reg[rs1] - (int32_t)Reg[rs2]);
             }
             break;
 
-        case 1:      
-            Reg[rd] = Reg[rs1] << Reg[rs2];
+        case 1: 
+            if (funct7 == 1)
+            {
+                result = (uint64_t)((int32_t)Reg[rs1] * (int32_t)Reg[rs2]);
+                Reg[rd] = (uint32_t)(result >> 32);
+            }     
+            else
+            {
+                Reg[rd] = Reg[rs1] << Reg[rs2];
+            }
             break;
 
         case 2: 
-            if((int32_t)Reg[rs1] < (int32_t)Reg[rs2]){
-                Reg[rd] = 1;
+            if (funct7 == 1)
+            {
+                result = (uint64_t)((int32_t)Reg[rs1] * (uint32_t)Reg[rs2]);
+                Reg[rd] = (uint32_t)(result >> 32);
             }
-            else{
-                Reg[rd] = 0;
-            }
+            else
+            {
+                if((int32_t)Reg[rs1] < (int32_t)Reg[rs2]){
+                    Reg[rd] = 1;
+                }
+                else{
+                    Reg[rd] = 0;
+                }
+            }    
             break;
 
         case 3: 
-            if(Reg[rs1] < Reg[rs2]){
-                Reg[rd] = 1;
+            if (funct7 == 1)
+            {
+                result = (uint64_t)((uint32_t)Reg[rs1] * (uint32_t)Reg[rs2]);
+                Reg[rd] = (uint32_t)(result >> 32);
             }
-            else{
-                Reg[rd] = 0;
-            }
+
+            else
+            {
+                if(Reg[rs1] < Reg[rs2]){
+                    Reg[rd] = 1;
+                }
+                else{
+                    Reg[rd] = 0;
+                }
+            }    
             break;
 
         case 4: 
-            Reg[rd] = Reg[rs1] ^ Reg[rs2];
-            break;
+            if (funct7 == 1)
+            {
+                Reg[rd] = (uint32_t)((int32_t)Reg[rs1] / (int32_t)Reg[rs2]);
+            }
+            
+            else
+            {
+                Reg[rd] = Reg[rs1] ^ Reg[rs2];
+            }
+            break;    
 
         case 5: 
             if(funct7 == 0) {
                 Reg[rd] = Reg[rs1] >> Reg[rs2];
             }
+
+            else if (funct7 == 1)
+            {
+                Reg[rd] = (uint32_t)((uint32_t)Reg[rs1] / (uint32_t)Reg[rs2]);
+            }
+
             else{
                 Reg[rd] = (int32_t)Reg[rs1] >> Reg[rs2];
             }
             break;
         
         case 6:
-            Reg[rd] = Reg[rs1] | Reg[rs2];
+
+            if (funct7 == 1)
+            {
+                Reg[rd] = (uint32_t)((int32_t)Reg[rs1] % (int32_t)Reg[rs2]);
+            }
+
+            else
+            {
+                Reg[rd] = Reg[rs1] | Reg[rs2];
+            }
             break;
 
         case 7: 
-            Reg[rd] = Reg[rs1] & Reg[rs2];
+
+            if (funct7 == 1)
+            {
+                Reg[rd] = (uint32_t)((uint32_t)Reg[rs1] / (uint32_t)Reg[rs2]);
+            }
+
+            else
+            {
+                Reg[rd] = Reg[rs1] & Reg[rs2];
+            }
             break;
 
         default:
@@ -310,16 +370,15 @@ void JAL_type(uint32_t instruction, uint8_t *memory_r)
 
 void JALR_type(uint32_t instruction, uint8_t *memory_r)
 {
-    unsigned int rd = 0, funct3 = 0, rs1 = 0, imm = 0;
+    unsigned int rd = 0, rs1 = 0, imm = 0;
 
     rd = (instruction >> 7) & 0x1F;
-    funct3 = (instruction >> 12) & 0x07;
     rs1 = (instruction >> 15) & 0x1F;
     imm = (instruction >> 20) & 0xFFF;
 
     // debugger(Debug_mode, memory_r, instruction);
 
-    if (Reg[rs1] == 0 && rd == 0 && imm == 0 && funct3 == 0)
+    if (rs1 == 1 && Reg[rs1] == 0 && rd == 0 && imm == 0)
     {
         Reg[rd] = 0;
         PC = PC;
@@ -587,4 +646,48 @@ void STR_type(uint32_t instruction, uint8_t *memory_r)
     PC += 4;
 
     return;
+}
+
+void ECALL_type(uint32_t instruction, uint8_t *memory_r)
+{
+    uint32_t cnt = 0;
+    char ch;
+    uint32_t address;
+
+    address = Reg[11];
+    
+    if (Reg[17] == 63 && Reg[10] == 0)
+    {
+        for (uint32_t i = 0; i < Reg[12]; i++)
+        {
+            std::cin >> ch;
+            store_mem(address,0,memory_r,uint32_t(ch));
+            cnt++;
+            address++;
+        }
+
+        Reg[10] = cnt;
+    }
+
+    else if (Reg[17] == 64 && Reg[10] == 1)
+    {
+        for (uint32_t i = 0; i < Reg[12]; i++)
+        {
+            ch = char(load_mem(address, 0, memory_r));
+            std::cout << ch;
+            cnt++;
+            address++;
+        }
+
+        std::cout << endl;
+
+        Reg[10] = cnt;
+    }
+
+    else if (Reg[17] == 94 && Reg[10] == 0)
+    {
+        cout << "ALL OK. " << endl;
+    }
+
+    PC = PC + 4;
 }

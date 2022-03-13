@@ -60,6 +60,10 @@ void instruction_Fetch(uint32_t no_instr, uint8_t *memory_r)
                 JALR_type(instruction, memory_r);
                 break;
 
+            case 115:
+                ECALL_type(instruction, memory_r);
+                break;
+
             default: 
                 unknown_instr(instruction);
                 break;   
