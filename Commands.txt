@@ -8,7 +8,7 @@ x2 -> stack pointer
 R -Type  | opcode = 27
 Functions:
 ADD
-SUM
+SUB
 SLL
 SLT
 SLTU
@@ -18,14 +18,14 @@ SRA
 OR
 AND
 
-I-Type | opcode = 19  | load opcode = 3
-Functions:                Load functions:
-ADDI
-SLTI
-SLTIU
-XORI
-ORI
-ANDI
+I-Type | opcode = 19  | load opcode = 3 | JALR opcode = 103
+Functions:                Load functions:   Jump and Link Register:
+ADDI                      LB                JALR
+SLTI                      LH
+SLTIU                     LW
+XORI                      LBU
+ORI                       LHU
+ANDI                      
 SLLI
 SRLI
 SRAI
@@ -44,7 +44,7 @@ BLTU
 BGEU
 
 U-type | opcode = 55 | Auipc opcode =23
-LUI              AUIPC
+LUI               AUIPC
 
 J- Type | opcode = 111
 JAL
