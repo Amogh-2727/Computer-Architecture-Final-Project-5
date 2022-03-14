@@ -1,0 +1,4 @@
+export RISCV=/pkgs/riscv-gnu-toolchain/riscv-gnu-toolchain
+alias rvgcc=$RISCV/bin/riscv64-unknown-linux-gnu-gcc
+alias rvobjdump=$RISCV/bin/riscv64-unknown-linux-gnu-objdump
+alias rvas=$RISCV/bin/riscv64-unknown-linux-gnu-as
