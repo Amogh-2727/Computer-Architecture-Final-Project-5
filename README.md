@@ -1,5 +1,5 @@
 # Computer-Architecture-Final-Project-5
-##### RISC-V ISA Simulator
+#### RISC-V ISA Simulator
 
 The instruction set architecture (ISA) level simulator for RISC-V was implemented in C++.
 
@@ -12,11 +12,11 @@ The only registers the simulator should get initialized with (except as a result
 code) are the sp, pc, and ra (which the user should initialize to 0).The simulation will continue until
 it encounters a jr ra instruction with ra == 0.
 
-##### Project Framework
+#### Project Framework
 
    program.c ----> assembly_code.s ----> assembly.o ----> program.mem ====> RISC-V ISA Simulator
 
-##### Prerequisites
+#### Prerequisites
 
 C++ compiler
 Some of them are listed below:
@@ -29,7 +29,7 @@ Some of them are listed below:
 Modify the following cmd accordingly:
 *	make all DEBUG=0/1/2 MEM_FILE=file.mem R_PC=0
 
-Markup: Multiple Test cases were verified,they are listed below:
+#### Test Cases
 *	Misaligned PC
 *	Invalid instruction 
 *	Unit testes for the complete RV32 Instruction set.
@@ -49,15 +49,14 @@ Markup: Multiple Test cases were verified,they are listed below:
 *	Implemented the ecall instruction to provide the given three system calls (Read, Write, Exit)
 
 
-##### Authors
+#### Authors
 
 *   **Arjun Preetham Murugesh Ekalaivan** 
 *   **Ritvik Tiwari** 
 *   **Viraj Lodhia** 
 *   **Amogh M Morey** 
 
-##### Acknowledgments
+#### Acknowledgments
 
-* https://riscv.org/wp-content/uploads/2019/12/riscv-spec-20191213.pdf  // RISC instruction set pdf
-* https://github.com/scotws/RISC-V-tests/blob/master/docs/riscv_linux_system_calls.md
-	//Linux System Calls for RISC-V with GNU GCC/Spike/pk
+* https://riscv.org/wp-content/uploads/2019/12/riscv-spec-20191213.pdf   --RISC instruction set pdf
+* https://github.com/scotws/RISC-V-tests/blob/master/docs/riscv_linux_system_calls.md   --Linux System Calls for RISC-V with GNU GCC/Spike/pk
