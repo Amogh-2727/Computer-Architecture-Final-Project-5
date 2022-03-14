@@ -26,23 +26,23 @@ Some of them are listed below:
 
 #### Running the tests
 
-Modify the following cmd accordingly:
-*	make all DEBUG=0/1/2 MEM_FILE=file.mem R_PC=0
+Modify the following command accordingly:
+*	make all DEBUG=0/1/2 MEM_FILE=file.mem R_PC=0 R_SP=65536
 
 #### Test Cases
 *	Misaligned PC
 *	Invalid instruction 
-*	Unit testes for the complete RV32 Instruction set.
-*	Unit testes for signed values of the complete RV32 Instruction set.
+*	Unit tests for the complete RV32 Instruction set.
+*	Unit tests for signed values of the complete RV32 Instruction set.
 *	Nested loops : Nested if – else loops and Nested for loops.
 *	Zero register test
 *	Function call 
 *	Debugger was implemented along with the following modes:
-    *	Mode 0 :Silent mode
-    *	Mode 1 :Verbose mode
-    *	Mode 2 :Debugger mode
+    *	Mode 0: Silent mode
+    *	Mode 1: Verbose mode
+    *	Mode 2: Debugger mode
 
-*   Ability to single step and print contents of register, memory, display current instruction was implemented through the debugger along with a Help cmd to display the different commands under the debugger and also an option for quit and direct verbose print.
+*   Debugger Features: Single step, free run, display instruction, verbose print, display contents of memory and registers, help, quit.
 
 *	RV32I M-Extension: MUL / DIV operations were verified.
 
