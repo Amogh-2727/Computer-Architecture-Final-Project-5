@@ -1,9 +1,8 @@
-#include<stdint.h>
-#include "defs.h"
-#include "all_types.cpp"
 #include <stdio.h>
+#include<stdint.h>
+#include "all_types.cpp"
 
-void instruction_Fetch(uint32_t no_instr, uint8_t *memory_r)
+void instruction_fetch(uint32_t no_instr, uint8_t *memory_r)
 {
     int opcode;
     long int temp1,temp2,temp3, temp4;
@@ -24,6 +23,10 @@ void instruction_Fetch(uint32_t no_instr, uint8_t *memory_r)
         debugger(Debug_mode, memory_r, instruction);
 
         switch(opcode){
+            case 0:
+                trap(instruction);
+                break;
+
             case 51:
                 R_type(instruction, memory_r);
                 break;

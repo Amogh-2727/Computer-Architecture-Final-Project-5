@@ -1,100 +1,16 @@
+#include <iostream>
 #include <stdint.h>
 #include <stdlib.h>
-#include "defs.h"
 #include <stdio.h>
-#include <string.h>
-#include <bitset>
+#include "defs.cpp"
 
-int init = 0;
-char inp = '\0';
+using namespace std;
 
-
-void verbose_print(uint32_t instruction, uint32_t Debug_mode)
+void trap(uint32_t instruction)
 {
-    if (Debug_mode == 1)
-    {
-        cout << "----------------------------------------------------------------------------------------------------------------" << endl;
-        std::cout << std::hex << "Instruction Address: " << instruction << std::dec << endl << endl;
-        std::cout << std::hex << "PC:  " << PC << std::dec << endl; 
-
-        std::cout << std::hex << "R0:  " << left << setw(10) << Reg[0] << "R1:  " << left << setw(10) << Reg[1] << "R2:  " << left << setw(10) << Reg[2] << "R3:  " << left << setw(10) << Reg[3] << "R4:  " << left << setw(10) << Reg[4] << "R5:  " << left << setw(10) << Reg[5] << "R6:  " << left << setw(10) << Reg[6] << "R7:  " << left << setw(10) << Reg[7]  << std::dec << endl;
-        std::cout << std::hex << "R8:  " << left << setw(10) << Reg[8] << "R9:  " << left << setw(10) << Reg[9] << "R10: " << left << setw(10) << Reg[10] << "R11: " << left << setw(10) << Reg[11] << "R12: " << left << setw(10) << Reg[12] << "R13: " << left << setw(10) << Reg[13] << "R14: " << left << setw(10) << Reg[14] << "R15: " << left << setw(10) << Reg[15]  << std::dec << endl;
-        std::cout << std::hex << "R16: " << left << setw(10) << Reg[16] << "R17: " << left << setw(10) << Reg[17] << "R18: " << left << setw(10) << Reg[18] << "R19: " << left << setw(10) << Reg[19] << "R20: " << left << setw(10) << Reg[20] << "R21: " << left << setw(10) << Reg[21] << "R22: " << left << setw(10) << Reg[22] << "R23: " << left << setw(10) << Reg[23]  << std::dec << endl;
-        std::cout << std::hex << "R24: " << left << setw(10) << Reg[24] << "R25: " << left << setw(10) << Reg[25] << "R26: " << left << setw(10) << Reg[26] << "R27: " << left << setw(10) << Reg[27] << "R28: " << left << setw(10) << Reg[28] << "R29: " << left << setw(10) << Reg[29] << "R30: " << left << setw(10) << Reg[30] << "R31: " << left << setw(10) << Reg[31]  << std::dec << endl;
-        cout << "----------------------------------------------------------------------------------------------------------------" << endl << endl;
-    }
-}
-
-void print_usage()
-{
-    cout << "--------------------------------------------------------------------------" << endl;
-    cout << "Usage: " << endl;
-    cout << "Help: h" << endl;
-    cout << "Quit: q" << endl;
-    cout << "Step run: n" << endl;
-    cout << "Free run: c" << endl;
-    cout << "Registers: r" << endl;
-    cout << "Instruction: i" << endl;
-    cout << "Verbose Print: p" << endl;
-    cout << "Memory Access: m" << endl;
-    cout << "--------------------------------------------------------------------------" << endl << endl;
-}
-
-void debugger(uint32_t Debug_mode, uint8_t *memory_r, uint32_t instruction)
-{   
-    uint32_t address, index;
-
-    if (Debug_mode == 2)
-    {   
-        while (inp != 'c')
-        {
-            cout << "(rdb) ";
-            cin >> inp;
-            switch(inp)
-            {
-                case 'c':
-                    return;
-                    break;
-                
-                case 'n': 
-                    return;
-                    break;
-                
-                case 'm':
-                    cout << "Address: ";
-                    cin >> address;
-                    cout << "Mem[" << address << "]: " << std::hex << (int)memory_r[address + 3] << (int)memory_r[address + 2] << (int)memory_r[address + 1] << (int)memory_r[address] << std::dec << endl;
-                    break;
-                
-                case 'r':
-                    cout << "Register Index: ";
-                    cin >> index;
-                    cout << "Reg[" << index << "]: " << std::hex << Reg[index] << std::dec << endl;
-                    break;
-
-                case 'i':
-                    cout << "Instruction(hex): " << std::hex << instruction << std::dec << "  "<< "Instruction(bin): "<< std::bitset<32>(instruction) << endl;
-                    break;
-
-                case 'p':
-                    verbose_print(instruction, 1);
-                    break;
-
-                case 'h':
-                    print_usage();
-                    break;
-
-                case 'q':
-                    exit(0);
-                    break;    
-                
-                default:
-                    print_usage();
-                    break;
-            }
-        }
-
-    }
+    cout << "VOID Instruction. Exiting...." << endl;
+    verbose_print(instruction, 1, 1);
+    exit(0);
 }
 
 int R_type(uint32_t instruction, uint8_t *memory_r)
@@ -112,8 +28,6 @@ int R_type(uint32_t instruction, uint8_t *memory_r)
     rs2 = (instruction >> 20) & 0x1F;
     funct7 = (instruction >> 25) & 0x3F;
 
-    // debugger(Debug_mode, memory_r, instruction);
-
     switch(funct3){
         case 0: 
             if(funct7 == 0) {
@@ -122,7 +36,7 @@ int R_type(uint32_t instruction, uint8_t *memory_r)
 
             else if (funct7 == 1)
             {
-                Reg[rd] = (uint32_t)((int32_t)Reg[rs1] * (int32_t)Reg[rs2]);
+                Reg[rd] = (uint32_t)((int64_t)Reg[rs1] * (int64_t)Reg[rs2]);
             }
 
             else{
@@ -133,7 +47,7 @@ int R_type(uint32_t instruction, uint8_t *memory_r)
         case 1: 
             if (funct7 == 1)
             {
-                result = (uint64_t)((int32_t)Reg[rs1] * (int32_t)Reg[rs2]);
+                result = (uint64_t)((int64_t)Reg[rs1] * (int64_t)Reg[rs2]);
                 Reg[rd] = (uint32_t)(result >> 32);
             }     
             else
@@ -145,7 +59,7 @@ int R_type(uint32_t instruction, uint8_t *memory_r)
         case 2: 
             if (funct7 == 1)
             {
-                result = (uint64_t)((int32_t)Reg[rs1] * (uint32_t)Reg[rs2]);
+                result = (uint64_t)((int64_t)Reg[rs1] * (uint64_t)Reg[rs2]);
                 Reg[rd] = (uint32_t)(result >> 32);
             }
             else
@@ -162,7 +76,7 @@ int R_type(uint32_t instruction, uint8_t *memory_r)
         case 3: 
             if (funct7 == 1)
             {
-                result = (uint64_t)((uint32_t)Reg[rs1] * (uint32_t)Reg[rs2]);
+                result = (uint64_t)((uint64_t)Reg[rs1] * (uint64_t)Reg[rs2]);
                 Reg[rd] = (uint32_t)(result >> 32);
             }
 
@@ -234,7 +148,7 @@ int R_type(uint32_t instruction, uint8_t *memory_r)
             unknown_instr(instruction);
             break;    
     }
-    verbose_print(instruction, Debug_mode);
+    verbose_print(instruction, Debug_mode, Debug_mode);
     
     PC = PC + 4;
 
@@ -254,8 +168,6 @@ void I_type(int32_t instruction, uint8_t *memory_r){
     funct3 = (instruction >> 12) & 0x07;
     rs1 = (instruction >> 15) & 0x1F;
     imm = (instruction >> 20) & 0xFFF;
-
-    // debugger(Debug_mode, memory_r, instruction);
 
     switch(funct3)
     {
@@ -306,7 +218,7 @@ void I_type(int32_t instruction, uint8_t *memory_r){
             unknown_instr(instruction);
             break;    
     }
-    verbose_print(instruction, Debug_mode);
+    verbose_print(instruction, Debug_mode, Debug_mode);
     PC = PC + 4;
     return;
 }
@@ -317,12 +229,10 @@ void LUI_type(uint32_t instruction, uint8_t *memory_r)
 
     rd = (instruction >> 7) & 0x1F;
     imm = (instruction >> 12) & 0xFFFFF;
-
-    // debugger(Debug_mode, memory_r, instruction);
     
     Reg[rd] = (imm << 12);
     
-    verbose_print(instruction, Debug_mode);
+    verbose_print(instruction, Debug_mode, Debug_mode);
     PC = PC + 4;
 
     return;
@@ -335,11 +245,9 @@ void AUIPC_type(uint32_t instruction, uint8_t *memory_r)
     rd = (instruction >> 7) & 0x1F;
     imm = (instruction >> 12) & 0xFFFFF;
 
-    // debugger(Debug_mode, memory_r, instruction);
-
     Reg[rd] = PC + (imm << 12);
 
-    verbose_print(instruction, Debug_mode);
+    verbose_print(instruction, Debug_mode, Debug_mode);
     PC = PC + 4;
 
     return;
@@ -357,12 +265,10 @@ void JAL_type(uint32_t instruction, uint8_t *memory_r)
     imm_10_1 = (instruction >> 21) & 0x3FF;
     imm_20 = (instruction >> 31) & 0x01;
     imm = zeromask | (imm_10_1 << 1) | (imm_11 << 11) | (imm_19_12 << 12) | (imm_20 << 20);
-
-    // debugger(Debug_mode, memory_r, instruction);
     
     Reg[rd] = PC + 4;
 
-    verbose_print(instruction, Debug_mode);
+    verbose_print(instruction, Debug_mode, Debug_mode);
     PC = PC + sign_ext(imm,21);
 
     return;
@@ -376,8 +282,6 @@ void JALR_type(uint32_t instruction, uint8_t *memory_r)
     rs1 = (instruction >> 15) & 0x1F;
     imm = (instruction >> 20) & 0xFFF;
 
-    // debugger(Debug_mode, memory_r, instruction);
-
     if (rs1 == 1 && Reg[rs1] == 0 && rd == 0 && imm == 0)
     {
         Reg[rd] = 0;
@@ -389,7 +293,7 @@ void JALR_type(uint32_t instruction, uint8_t *memory_r)
     else
     {
         Reg[rd] = PC + 4;
-        verbose_print(instruction, Debug_mode);
+        verbose_print(instruction, Debug_mode, Debug_mode);
         PC = (uint32_t)((int32_t)Reg[rs1] + sign_ext(imm,12));
     }
 
@@ -411,12 +315,10 @@ void B_type(uint32_t instruction, uint8_t *memory_r)
     imm_12 = (instruction >> 31) & 0x01;
     imm = zeromask | (imm_4_1 << 1) | (imm_10_5 << 5) | (imm_11 << 11) | (imm_12 << 12);
 
-    // debugger(Debug_mode, memory_r, instruction);
-
     switch(funct3)
     {
         case 0: 
-            verbose_print(instruction, Debug_mode);
+            verbose_print(instruction, Debug_mode, Debug_mode);
             if (Reg[rs1] == Reg[rs2])
                 PC = PC + sign_ext(imm,13);
             else
@@ -424,7 +326,7 @@ void B_type(uint32_t instruction, uint8_t *memory_r)
             break;
 
         case 1: 
-            verbose_print(instruction, Debug_mode);
+            verbose_print(instruction, Debug_mode, Debug_mode);
             if (Reg[rs1] != Reg[rs2])
                 PC = PC + sign_ext(imm,13);
             else
@@ -432,7 +334,7 @@ void B_type(uint32_t instruction, uint8_t *memory_r)
             break;
 
         case 4: 
-            verbose_print(instruction, Debug_mode);
+            verbose_print(instruction, Debug_mode, Debug_mode);
             if ((int32_t)Reg[rs1] < (int32_t)Reg[rs2])
                 PC = PC + sign_ext(imm,13);
             else
@@ -440,7 +342,7 @@ void B_type(uint32_t instruction, uint8_t *memory_r)
             break;
 
         case 5: 
-            verbose_print(instruction, Debug_mode);
+            verbose_print(instruction, Debug_mode, Debug_mode);
             if ((int32_t)Reg[rs1] >= (int32_t)Reg[rs2])
                 PC = PC + sign_ext(imm,13);
             else
@@ -448,7 +350,7 @@ void B_type(uint32_t instruction, uint8_t *memory_r)
             break;
 
         case 6: 
-            verbose_print(instruction, Debug_mode);
+            verbose_print(instruction, Debug_mode, Debug_mode);
             if (Reg[rs1] < (uint32_t)Reg[rs2])
                 PC = PC + sign_ext(imm,13);
             else
@@ -456,7 +358,7 @@ void B_type(uint32_t instruction, uint8_t *memory_r)
             break;
 
         case 7: 
-            verbose_print(instruction, Debug_mode);
+            verbose_print(instruction, Debug_mode, Debug_mode);
             if (Reg[rs1] >= (uint32_t)Reg[rs2])
                 PC = PC + sign_ext(imm,13);
             else
@@ -560,8 +462,6 @@ void LD_type(uint32_t instruction, uint8_t *memory_r)
     rs1 = (instruction >> 15) & 0x1F;
     imm = (instruction >> 20) & 0xFFF;
 
-    // debugger(Debug_mode, memory_r, instruction);
-
     switch(funct3)
     {
         case 0: 
@@ -594,7 +494,7 @@ void LD_type(uint32_t instruction, uint8_t *memory_r)
             break;      
 
     }
-    verbose_print(instruction, Debug_mode);
+    verbose_print(instruction, Debug_mode, Debug_mode);
     PC += 4;
 
     return;
@@ -614,8 +514,6 @@ void STR_type(uint32_t instruction, uint8_t *memory_r)
     imm_u = (instruction >> 25) & 0x7F;
     imm = imm | (imm_u << 5) | (imm_l);
     offset = sign_ext(imm, 12);
-
-    // debugger(Debug_mode, memory_r, instruction);
 
     switch(funct3)
     {
@@ -642,7 +540,7 @@ void STR_type(uint32_t instruction, uint8_t *memory_r)
             break;      
 
     }
-    verbose_print(instruction, Debug_mode);
+    verbose_print(instruction, Debug_mode, Debug_mode);
     PC += 4;
 
     return;
@@ -687,7 +585,9 @@ void ECALL_type(uint32_t instruction, uint8_t *memory_r)
     else if (Reg[17] == 94 && Reg[10] == 0)
     {
         cout << "ALL OK. " << endl;
+        exit(0);
     }
 
+    verbose_print(instruction, Debug_mode, Debug_mode);
     PC = PC + 4;
 }
