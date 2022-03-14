@@ -1,12 +1,12 @@
 # Computer-Architecture-Final-Project-5
-RISC-V ISA Simulator
+##### RISC-V ISA Simulator
 
 The instruction set architecture (ISA) level simulator for RISC-V was implemented in C++.
 
 The simulator accepts the following three input parameters:
-	Input memory image file (default to program.mem)
-	Starting address(default to 0)
-	Stack address (default to 65535)
+*	Input memory image file (default to program.mem)
+*	Starting address(default to 0)
+*	Stack address (default to 65535)
 
 The only registers the simulator should get initialized with (except as a result of simulating the loaded
 code) are the sp, pc, and ra (which the user should initialize to 0).The simulation will continue until
@@ -20,14 +20,14 @@ it encounters a jr ra instruction with ra == 0.
 
 C++ compiler
 Some of them are listed below:
-	Microsoft Visual C++ compiler
-	The GNU compiler collection
+*	Microsoft Visual C++ compiler
+*	The GNU compiler collection
 	
 
 #### Running the tests
 
 Modify the following cmd accordingly:
-	make all DEBUG=2 MEM_FILE=ecall.mem R_PC=0
+*	make all DEBUG=0/1/2 MEM_FILE=file.mem R_PC=0
 
 Markup: Multiple Test cases were verified,they are listed below:
 *	Misaligned PC
@@ -51,10 +51,10 @@ Markup: Multiple Test cases were verified,they are listed below:
 
 ##### Authors
 
-***Arjun Preetham Murugesh Ekalaivan ** 
-***Ritvik Tiwari** 
-***Viraj Lodhia** 
-***Amogh M Morey** 
+*   **Arjun Preetham Murugesh Ekalaivan** 
+*   **Ritvik Tiwari** 
+*   **Viraj Lodhia** 
+*   **Amogh M Morey** 
 
 ##### Acknowledgments
 
