@@ -4,7 +4,7 @@
 
  int main (int argc, char *argv[]) {
 	  
-	   printf("\nThe number of arguements passed is =%d \n", (argc-1));
+	   printf("\nThe number of arguements passed are =%d \n", (argc-1));
 	   printf("\nThe arguements are passed in the order: PC =  %s \t SP = %s \t Memory file name = %s\n ", argv[1], argv[2],argv[3]);
 		 int value;	  
 	         char ch;
