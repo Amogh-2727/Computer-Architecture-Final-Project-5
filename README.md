@@ -46,7 +46,7 @@ Modify the following command accordingly:
 
 *	RV32I M-Extension: MUL / DIV operations were verified.
 
-*	Implemented the ecall instruction to provide the given three system calls (Read, Write, Exit)
+*	Implemented the ECALL instruction to provide the given three system calls (Read, Write, Exit)
 
 
 #### Authors
