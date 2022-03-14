@@ -11,10 +11,10 @@
   all: $(TARGET) exec
 
   $(TARGET): $(TARGET).cpp
-	$(CC) $(FLAGS) -o $(TARGET) $(TARGET).cpp
+	$(CC) $(FLAGS) -I ../header -o $(TARGET) $(TARGET).cpp
 
   clean:
 	$(RM) $(TARGET)
 
   exec:
-	./$(TARGET) $(R_PC) $(R_SP) $(MEM_FILE) $(DEBUG)
+	./$(TARGET) $(R_PC) $(R_SP) ../testcases/$(MEM_FILE) $(DEBUG)
