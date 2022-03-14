@@ -22,31 +22,31 @@ C++ compiler
 Some of them are listed below:
 	Microsoft Visual C++ compiler
 	The GNU compiler collection
-	and so on
+	
 
 #### Running the tests
 
 Modify the following cmd accordingly:
 	make all DEBUG=2 MEM_FILE=ecall.mem R_PC=0
 
-Multiple Test cases were verified,they are listed below:
-	Misaligned PC
-	Invalid instruction 
-	Unit testes for the complete RV32 Instruction set.
-	Unit testes for signed values of the complete RV32 Instruction set.
-	Nested loops : Nested if – else loops and Nested for loops.
-	Zero register test
-	Function call 
-	Debugger was implemented along with the following modes:
-		Mode 0 :Silent mode
-	Mode 1 :Verbose mode
-	Mode 2 :Debugger mode
+Markup: Multiple Test cases were verified,they are listed below:
+*	Misaligned PC
+*	Invalid instruction 
+*	Unit testes for the complete RV32 Instruction set.
+*	Unit testes for signed values of the complete RV32 Instruction set.
+*	Nested loops : Nested if – else loops and Nested for loops.
+*	Zero register test
+*	Function call 
+*	Debugger was implemented along with the following modes:
+    *	Mode 0 :Silent mode
+    *	Mode 1 :Verbose mode
+    *	Mode 2 :Debugger mode
 
-Ability to single step and print contents of register, memory, display current instruction was implemented through the debugger along with a Help cmd to display the different commands under the debugger and also an option for quit and direct verbose print.
+*   Ability to single step and print contents of register, memory, display current instruction was implemented through the debugger along with a Help cmd to display the different commands under the debugger and also an option for quit and direct verbose print.
 
-	RV32I M-Extension: MUL / DIV operations were verified.
+*	RV32I M-Extension: MUL / DIV operations were verified.
 
-	Implemented the ecall instruction to provide the given three system calls (Read, Write, Exit)
+*	Implemented the ecall instruction to provide the given three system calls (Read, Write, Exit)
 
 
 ##### Authors
