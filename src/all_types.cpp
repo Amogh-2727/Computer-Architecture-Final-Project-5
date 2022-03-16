@@ -187,7 +187,7 @@ void I_type(int32_t instruction, uint8_t *memory_r){
             break;
 
         case 3: 
-            if (Reg[rs1] < (uint32_t)imm)
+            if ((uint32_t)Reg[rs1] < (uint32_t)(sign_ext(imm, 12)))
                 Reg[rd] = 1;
             else
                 Reg[rd] = 0;
@@ -199,12 +199,12 @@ void I_type(int32_t instruction, uint8_t *memory_r){
 
         case 5:
             funct7 = (imm & 0xFE0) >> 5;
-            shamt = (imm & 0x01F); 
-
+            shamt = (imm & 0x01F);
             if (funct7 == 0)
                 Reg[rd] = Reg[rs1] >> shamt;
             else
                 Reg[rd] = (uint32_t)((int32_t) Reg[rs1] >> shamt);
+            break;
 
         case 6:
             Reg[rd] = Reg[rs1] | sign_ext(imm, 12);
@@ -379,7 +379,7 @@ uint32_t load_mem(uint32_t address, uint32_t type, uint8_t *memory_r)
     uint32_t data = 0;
     uint32_t temp1 = 0, temp2 = 0, temp3 =0;
 
-    if (address >=0 && address < MEMSIZE)
+    if (address >= 0 && address <= MEMSIZE)
     {
         switch(type)
         {
@@ -406,10 +406,9 @@ uint32_t load_mem(uint32_t address, uint32_t type, uint8_t *memory_r)
                 break; 
         }
     }
-
     else
     {
-        cout << endl << "Load from memory failed. Address out of bounds " << endl << endl;
+        cout << "Load from memory failed. Address out of bounds " << endl << endl;
         exit(0);
     }
     return data;
@@ -417,7 +416,7 @@ uint32_t load_mem(uint32_t address, uint32_t type, uint8_t *memory_r)
 
 void store_mem(uint32_t address, uint32_t type, uint8_t *memory_r, uint32_t data)
 {
-    if (address >=0 && address < MEMSIZE)
+    if (address >= 0 && address <= MEMSIZE)
     {
         switch(type)
         {
@@ -442,7 +441,6 @@ void store_mem(uint32_t address, uint32_t type, uint8_t *memory_r, uint32_t data
                 break; 
         }
     }
-
     else
     {
         cout << "Store to memory failed. Address out of bounds " << endl << endl;
@@ -505,7 +503,6 @@ void STR_type(uint32_t instruction, uint8_t *memory_r)
     unsigned int rs2 = 0, funct3 = 0, rs1 = 0, imm_l = 0, imm_u = 0;
     unsigned int imm = 0x00000000;
     int32_t offset;
-    //uint32_t zeromask = 0x00000000;
     uint32_t address, data;
     imm_l = (instruction >> 7) & 0x1F;
     funct3 = (instruction >> 12) & 0x07;

@@ -15,7 +15,7 @@ main:
 	sw	zero,-28(s0)
 	lw	a4,-20(s0)
 	lw	a5,-24(s0)
-	blt	a4,a5,.L2
+	bgeu	a5,a4,.L2
 	li	a5,1
 	sw	a5,-28(s0)
 	j	.L3
